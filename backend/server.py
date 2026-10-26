@@ -3476,7 +3476,7 @@ def _owed_months(owed: float, members: int) -> float:
     denom = members * COMMITTEE_MONTHLY_RATE
     if denom <= 0:
         return 0.0
-    return round(max(0.0, owed / denom), 2)
+    return round(max(0.0, owed / denom), 4)
 
 
 @api_router.get("/reports/disclosure/all-governorates-overdue")

@@ -10,6 +10,17 @@ import "../styles/disclosure.css";
 const today = () => new Date().toISOString().slice(0, 10);
 const fmtNum = (v, dec = 2) => Number(v || 0).toLocaleString("ar-EG", { minimumFractionDigits: dec, maximumFractionDigits: dec });
 const fmtInt = (v) => Number(v || 0).toLocaleString("ar-EG");
+// Owed-months (e.g. 2.37) → "٢ شهر و ١١ يوم" (month = 30 days).
+const fmtMonthsDays = (v) => {
+  const total = Math.max(0, Math.round(Number(v || 0) * 30));
+  const months = Math.floor(total / 30);
+  const days = total % 30;
+  if (!months && !days) return "—";
+  const parts = [];
+  if (months) parts.push(`${fmtInt(months)} شهر`);
+  if (days) parts.push(`${fmtInt(days)} يوم`);
+  return parts.join(" و ");
+};
 
 // Format a YYYY-MM marker for display: "2025-06" → "يونيو ٢٠٢٥".
 const AR_MONTHS = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
@@ -519,7 +530,7 @@ function GovOverdue({ data, from, to, gov, departmentName }) {
                     <td className="num">{fmtInt(r.members)}</td>
                     <td className="num">{fmtNum(r.collected)}</td>
                     <td className="num" style={{ color: "#b91c1c", fontWeight: 600 }}>{fmtNum(r.owed)}</td>
-                    <td className="num">{fmtNum(r.owed_months, 1)}</td>
+                    <td className="num">{fmtMonthsDays(r.owed_months)}</td>
                   </tr>
                 ))}
                 {isLast && (
@@ -528,7 +539,7 @@ function GovOverdue({ data, from, to, gov, departmentName }) {
                     <td className="num">{fmtInt(data.totals.members)}</td>
                     <td className="num">{fmtNum(data.totals.collected)}</td>
                     <td className="num">{fmtNum(data.totals.owed)}</td>
-                    <td className="num">{fmtNum(data.totals.owed_months, 1)}</td>
+                    <td className="num">{fmtMonthsDays(data.totals.owed_months)}</td>
                   </tr>
                 )}
               </tbody>
@@ -579,7 +590,7 @@ function AllGovsOverdue({ data, from, to, departmentName }) {
                       <td className="num">{fmtInt(r.members)}</td>
                       <td className="num">{fmtNum(r.collected)}</td>
                       <td className="num">{fmtNum(r.owed)}</td>
-                      <td className="num">{fmtNum(r.owed_months, 1)}</td>
+                      <td className="num">{fmtMonthsDays(r.owed_months)}</td>
                     </tr>
                   );
                 }
@@ -590,7 +601,7 @@ function AllGovsOverdue({ data, from, to, departmentName }) {
                       <td className="num">{fmtInt(r.members)}</td>
                       <td className="num">{fmtNum(r.collected)}</td>
                       <td className="num">{fmtNum(r.owed)}</td>
-                      <td className="num">{fmtNum(r.owed_months, 1)}</td>
+                      <td className="num">{fmtMonthsDays(r.owed_months)}</td>
                     </tr>
                   );
                 }
@@ -602,7 +613,7 @@ function AllGovsOverdue({ data, from, to, departmentName }) {
                     <td className="num">{fmtInt(r.members)}</td>
                     <td className="num">{fmtNum(r.collected)}</td>
                     <td className="num" style={{ color: "#b91c1c", fontWeight: 600 }}>{fmtNum(r.owed)}</td>
-                    <td className="num">{fmtNum(r.owed_months, 1)}</td>
+                    <td className="num">{fmtMonthsDays(r.owed_months)}</td>
                   </tr>
                 );
               })}
@@ -641,14 +652,14 @@ function CommitteeOverdue({ data, from, to, gov, committee, departmentName }) {
             <td className="num">{fmtInt(data.members)}</td>
             <td className="num">{fmtNum(data.collected)}</td>
             <td className="num" style={{ color: "#b91c1c", fontWeight: 600 }}>{fmtNum(data.owed)}</td>
-            <td className="num">{fmtNum(data.owed_months, 1)}</td>
+            <td className="num">{fmtMonthsDays(data.owed_months)}</td>
           </tr>
           <tr className="grand">
             <td colSpan={2} style={{ textAlign: "center" }}>الإجمالي</td>
             <td className="num">{fmtInt(data.members)}</td>
             <td className="num">{fmtNum(data.collected)}</td>
             <td className="num">{fmtNum(data.owed)}</td>
-            <td className="num">{fmtNum(data.owed_months, 1)}</td>
+            <td className="num">{fmtMonthsDays(data.owed_months)}</td>
           </tr>
         </tbody>
       </table>
