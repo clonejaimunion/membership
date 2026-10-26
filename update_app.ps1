@@ -6,6 +6,6 @@ $ErrorActionPreference = "Stop"
 $safe = Join-Path $PSScriptRoot "UPDATE.ps1"
 if (-not (Test-Path $safe)) {
     $safe = Join-Path $env:TEMP "EA_UPDATE.ps1"
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Fraction2026/member.union/main/UPDATE.ps1" -OutFile $safe -UseBasicParsing
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/clonejaimunion/membership/main/UPDATE.ps1" -OutFile $safe -UseBasicParsing
 }
 & powershell -NoProfile -ExecutionPolicy Bypass -File $safe @args

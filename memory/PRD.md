@@ -1,7 +1,7 @@
 # PRD — member.union (أرشيف أعضاء النقابة)
 
 ## Original problem statement
-استيراد https://github.com/Fraction2026/member.union — approved plan phase 1: import & run, fix portal-permission checkboxes and inheritance display, harden security (bcrypt with legacy auto-upgrade, login lockout, approved origins, Arabic errors), Windows local run on port 5599, update scripts never wipe data + automatic backup.
+استيراد https://github.com/clonejaimunion/membership — approved plan phase 1: import & run, fix portal-permission checkboxes and inheritance display, harden security (bcrypt with legacy auto-upgrade, login lockout, approved origins, Arabic errors), Windows local run on port 5599, update scripts never wipe data + automatic backup.
 
 ## Architecture
 FastAPI (backend/server.py + services/) + MongoDB + React (CRA/craco, Arabic RTL). Locally on Windows the backend serves frontend/build on port 5599.

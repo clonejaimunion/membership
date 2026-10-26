@@ -8,7 +8,7 @@
 param(
     [string]$AppDir = "$env:LOCALAPPDATA\ElectronicArchive",
     [string]$BackupRoot = "$env:LOCALAPPDATA\ElectronicArchive_Backups",
-    [string]$ZipUrl = "https://github.com/Fraction2026/member.union/archive/refs/heads/main.zip",
+    [string]$ZipUrl = "https://github.com/clonejaimunion/membership/archive/refs/heads/main.zip",
     [int]$Port = 5599
 )
 

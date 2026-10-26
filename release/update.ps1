@@ -1,7 +1,7 @@
 # =====================================================
 #  تحديث الأرشيف الإلكتروني (member.union) من GitHub
 #  يُشغَّل بأمر واحد من PowerShell:
-#    [Net.ServicePointManager]::SecurityProtocol='Tls12'; iex (irm 'https://raw.githubusercontent.com/Fraction2026/member.union/main/release/update.ps1')
+#    [Net.ServicePointManager]::SecurityProtocol='Tls12'; iex (irm 'https://raw.githubusercontent.com/clonejaimunion/membership/main/release/update.ps1')
 #  - نسخة احتياطية كاملة تلقائية أولاً (قاعدة البيانات + المستندات + الإعدادات)
 #  - يحدّث ملفات البرنامج فقط ولا يحذف قاعدة البيانات أو المستندات أو ملفات .env
 #  - الواجهة مبنية جاهزة (لا يحتاج Node.js) — التشغيل على http://localhost:5599
@@ -11,7 +11,7 @@ $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 try { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 } catch {}
 
-$zipUrl = 'https://raw.githubusercontent.com/Fraction2026/member.union/main/release/member_union_update.zip'
+$zipUrl = 'https://raw.githubusercontent.com/clonejaimunion/membership/main/release/member_union_update.zip'
 $port = 5599
 
 function Fail($msg) {
