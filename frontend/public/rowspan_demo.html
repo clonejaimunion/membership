@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار حاسبة الميراث - Rowspan</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            direction: rtl;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #0f3a73;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th, td {
+            border: 1px solid #cbd5e1;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #e8eef7;
+            color: #0f3a73;
+            font-weight: bold;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        tbody tr:nth-child(odd) {
+            background-color: white;
+        }
+        .merged-cell {
+            background-color: #faf5ff !important;
+            color: #7c3aed;
+            font-weight: bold;
+            vertical-align: middle;
+            font-size: 15px;
+        }
+        .note {
+            background-color: #d1fae5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            border-left: 4px solid #10b981;
+        }
+        .warning {
+            background-color: #fef3c7;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            border-left: 4px solid #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧮 اختبار دمج خلايا "النسبة الشرعية" (Rowspan)</h1>
+        
+        <div class="warning">
+            <strong>⚠️ ملاحظة مهمة:</strong> هذا ملف اختبار مستقل يوضح كيف يجب أن يظهر الجدول بعد تطبيق rowspan بشكل صحيح.
+        </div>
+        
+        <h2 style="margin-top: 30px; color: #0f3a73;">الحالة: زوجة + 4 بنات (بدون أبناء ذكور)</h2>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 5%">#</th>
+                    <th style="width: 20%">الاسم</th>
+                    <th style="width: 12%">درجة القرابة</th>
+                    <th style="width: 10%">الفرض الأصلي</th>
+                    <th style="width: 18%">النسبة الشرعية</th>
+                    <th style="width: 8%">الرد</th>
+                    <th style="width: 10%">النسبة النهائية</th>
+                    <th style="width: 12%">نوع الاستحقاق</th>
+                    <th style="width: 10%">المبلغ (ج.م)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- الزوجة: صف واحد -->
+                <tr>
+                    <td>1</td>
+                    <td style="font-weight: bold; text-align: right; padding-right: 10px;">فاطمة محمد</td>
+                    <td>زوجة</td>
+                    <td>1/8</td>
+                    <td class="merged-cell">ثمن</td>
+                    <td>-</td>
+                    <td>1/8</td>
+                    <td><span style="background-color: #dbeafe; color: #1e40af; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">فرض</span></td>
+                    <td style="font-weight: bold; color: #047857;">1250.00</td>
+                </tr>
+                
+                <!-- البنت الأولى: خلية النسبة الشرعية مدموجة على 4 صفوف -->
+                <tr>
+                    <td>2</td>
+                    <td style="font-weight: bold; text-align: right; padding-right: 10px;">عائشة أحمد</td>
+                    <td>ابنة</td>
+                    <td>1/6</td>
+                    <td class="merged-cell" rowspan="4">ثلثان فرضًا والباقي ردًا</td>
+                    <td style="color: #d97706; font-weight: 500;">5/96</td>
+                    <td style="color: #475569; font-weight: 500;">7/32</td>
+                    <td><span style="background-color: #fef3c7; color: #d97706; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">فرض + رد</span></td>
+                    <td style="font-weight: bold; color: #047857;">2187.50</td>
+                </tr>
+                
+                <!-- البنت الثانية: لا توجد خلية للنسبة الشرعية -->
+                <tr>
+                    <td>3</td>
+                    <td style="font-weight: bold; text-align: right; padding-right: 10px;">خديجة أحمد</td>
+                    <td>ابنة</td>
+                    <td>1/6</td>
+                    <!-- لا توجد خلية هنا - مدموجة من الصف السابق -->
+                    <td style="color: #d97706; font-weight: 500;">5/96</td>
+                    <td style="color: #475569; font-weight: 500;">7/32</td>
+                    <td><span style="background-color: #fef3c7; color: #d97706; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">فرض + رد</span></td>
+                    <td style="font-weight: bold; color: #047857;">2187.50</td>
+                </tr>
+                
+                <!-- البنت الثالثة -->
+                <tr>
+                    <td>4</td>
+                    <td style="font-weight: bold; text-align: right; padding-right: 10px;">مريم أحمد</td>
+                    <td>ابنة</td>
+                    <td>1/6</td>
+                    <!-- لا توجد خلية هنا -->
+                    <td style="color: #d97706; font-weight: 500;">5/96</td>
+                    <td style="color: #475569; font-weight: 500;">7/32</td>
+                    <td><span style="background-color: #fef3c7; color: #d97706; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">فرض + رد</span></td>
+                    <td style="font-weight: bold; color: #047857;">2187.50</td>
+                </tr>
+                
+                <!-- البنت الرابعة -->
+                <tr>
+                    <td>5</td>
+                    <td style="font-weight: bold; text-align: right; padding-right: 10px;">زينب أحمد</td>
+                    <td>ابنة</td>
+                    <td>1/6</td>
+                    <!-- لا توجد خلية هنا -->
+                    <td style="color: #d97706; font-weight: 500;">5/96</td>
+                    <td style="color: #475569; font-weight: 500;">7/32</td>
+                    <td><span style="background-color: #fef3c7; color: #d97706; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">فرض + رد</span></td>
+                    <td style="font-weight: bold; color: #047857;">2187.50</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr style="background-color: #d1fae5; font-weight: bold;">
+                    <td colspan="8" style="text-align: right; padding: 12px;">الإجمالي الموزع:</td>
+                    <td style="color: #047857; font-size: 16px;">10000.00</td>
+                </tr>
+            </tfoot>
+        </table>
+        
+        <div class="note">
+            <h3 style="margin-top: 0;">✅ النتيجة الصحيحة:</h3>
+            <ul style="line-height: 1.8;">
+                <li><strong>الزوجة (فاطمة محمد):</strong> خلية منفصلة في عمود "النسبة الشرعية" تحتوي على "ثمن"</li>
+                <li><strong>البنات الأربع:</strong> خلية واحدة مدموجة <code>(rowspan=4)</code> في عمود "النسبة الشرعية" تحتوي على "ثلثان فرضًا والباقي ردًا"</li>
+                <li><strong>باقي الأعمدة:</strong> كل بنت في صف مستقل مع بياناتها الخاصة (الاسم، الفرض الأصلي، الرد، النسبة النهائية، المبلغ)</li>
+            </ul>
+        </div>
+        
+        <div class="warning" style="margin-top: 20px;">
+            <h3 style="margin-top: 0;">🔍 كيفية التحقق:</h3>
+            <p>افتح هذا الملف في المتصفح وتحقق من أن:</p>
+            <ol style="line-height: 1.8;">
+                <li>خلية "النسبة الشرعية" للبنات الأربع <strong>ظاهرة مرة واحدة فقط</strong> وتمتد على 4 صفوف</li>
+                <li>لا يوجد تكرار للنص "ثلثان فرضًا والباقي ردًا" في كل صف من صفوف البنات</li>
+                <li>الخلية المدموجة في وسط الصفوف الأربعة عمودياً (vertical-align: middle)</li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>

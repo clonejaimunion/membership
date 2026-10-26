@@ -1,0 +1,83 @@
+{
+  "app_name": "Union Management System (نظام إدارة نقابة)",
+  "rtl_required": true,
+  "themes": [
+    {
+      "id": "clean_professional",
+      "arabic_name": "نظيف ومهني (Clean Professional)",
+      "colors": {
+        "primary": "#0F4C81",
+        "secondary": "#E2E8F0",
+        "accent": "#F59E0B",
+        "background": "#F8FAFC",
+        "surface": "#FFFFFF",
+        "text": "#0F172A"
+      },
+      "typography": "IBM Plex Sans Arabic",
+      "spacing_and_layout": "Strict grid hierarchy, compact padding (p-4 to p-6). Borders use max 4px radius.",
+      "card_designs": "Flat white background, 1px solid slate border, no shadow.",
+      "button_styles": "Solid primary color, sharp corners, high contrast.",
+      "visual_examples": "Resembles enterprise financial software, emphasizing data density, tables, and clear separation.",
+      "recommendation": "Best for official syndicates prioritizing formal operations and document management."
+    },
+    {
+      "id": "modern_vibrant",
+      "arabic_name": "حديث وعصري (Modern Vibrant)",
+      "colors": {
+        "primary": "#2563EB",
+        "secondary": "#EFF6FF",
+        "accent": "#10B981",
+        "background": "#FAFAFA",
+        "surface": "#FFFFFF",
+        "text": "#171717"
+      },
+      "typography": "Cairo",
+      "spacing_and_layout": "Spacious padding (p-6 to p-8), moderate border radius (8px - 12px).",
+      "card_designs": "White surfaces with soft diffuse ambient shadow. Hover: slight lift (-translate-y-1).",
+      "button_styles": "Rounded-lg corners, vibrant solid color with subtle hover lift.",
+      "visual_examples": "Looks like a fast-growing SaaS startup dashboard. Friendly, bright, and engaging.",
+      "recommendation": "Best if the union wants to attract younger members with a modern tech platform feel."
+    },
+    {
+      "id": "elegant_minimal",
+      "arabic_name": "هادئ وأنيق (Elegant Minimal)",
+      "colors": {
+        "primary": "#3F3F46",
+        "secondary": "#F4F4F5",
+        "accent": "#9CA3AF",
+        "background": "#FFFFFF",
+        "surface": "#FAFAFA",
+        "text": "#18181B"
+      },
+      "typography": "Tajawal",
+      "spacing_and_layout": "Maximum negative space (p-8 to p-12). Wide margins, minimal borders.",
+      "card_designs": "Cardless approach or faint backgrounds without borders. Focus on typography.",
+      "button_styles": "Minimalist outline buttons or subtle gray ghost buttons.",
+      "visual_examples": "Like an art gallery or high-end architectural firm. Calming and distraction-free.",
+      "recommendation": "Great for unions focusing on arts, culture, or specialized professional services."
+    },
+    {
+      "id": "warm_friendly",
+      "arabic_name": "دافئ ومريح (Warm Friendly)",
+      "colors": {
+        "primary": "#166534",
+        "secondary": "#F0FDF4",
+        "accent": "#D97706",
+        "background": "#FCFBF8",
+        "surface": "#FFFFFF",
+        "text": "#27272A"
+      },
+      "typography": "Almarai",
+      "spacing_and_layout": "Cozy spacing, fully rounded corners (16px to full pill shape).",
+      "card_designs": "Soft tinted backgrounds (e.g., pale green or warm sand), soft ambient shadows.",
+      "button_styles": "Pill-shaped, earthy colors, soft hover transitions.",
+      "visual_examples": "Reminiscent of healthcare, wellness, or community-focused platforms.",
+      "recommendation": "Perfect for labor unions where community, support, and care are central."
+    }
+  ],
+  "global_guidelines": {
+    "rtl_implementation": "Crucial: Implement dir='rtl'. Use logical CSS classes like ms-, me-, ps-, pe-, start-, end- instead of left/right.",
+    "testing": "All interactive elements MUST include a data-testid attribute in kebab-case."
+  },
+  "instructions_to_main_agent": "Use 'Clean Professional' as the default theme if the user hasn't explicitly chosen one. Implement with React, Tailwind CSS (logical properties), and shadcn/ui."
+}

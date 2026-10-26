@@ -1,0 +1,144 @@
+/* A4 report print styles
+   ----------------------------------------------------------------
+   Each report page imports this once. Designed to render the same
+   way on screen and print — `@page` + a fixed body width gives the
+   operator a faithful preview before they hit Print.
+*/
+
+.disclosure-shell {
+  background: #f1f5f9;
+  min-height: 100vh;
+  padding: 24px;
+  direction: rtl;
+}
+
+.disclosure-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 210mm;
+  margin: 0 auto 16px;
+  padding: 12px 16px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.disclosure-toolbar input,
+.disclosure-toolbar select {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font: inherit;
+}
+
+/* The A4 sheet itself. Width is 210mm so 1mm in CSS = 1mm on paper.
+   Internal counter-based footer prints the page number on every sheet. */
+.a4-sheet {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto 12px;
+  padding: 16mm 14mm 22mm;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.08);
+  color: #0f172a;
+  font-family: "Cairo", "Segoe UI", "Tajawal", sans-serif;
+  position: relative;
+  page-break-after: always;
+}
+
+.a4-sheet:last-child { page-break-after: auto; }
+
+.a4-header {
+  border-bottom: 2px solid #0f3a73;
+  padding-bottom: 8px;
+  margin-bottom: 14px;
+}
+.a4-header h1 {
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0 0 4px;
+  text-align: center;
+  color: #0f3a73;
+}
+.a4-header .meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #475569;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.a4-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.a4-table th, .a4-table td {
+  border: 1px solid #cbd5e1;
+  padding: 5px 7px;
+  text-align: start;
+  vertical-align: middle;
+}
+.a4-table th {
+  background: #f1f5f9;
+  font-weight: 700;
+  color: #0f3a73;
+}
+.a4-table tr.subtotal td {
+  background: #eff6ff;
+  font-weight: 700;
+}
+.a4-table tr.grand td {
+  background: #0f3a73;
+  color: #fff;
+  font-weight: 800;
+}
+.a4-table td.num { text-align: end; font-variant-numeric: tabular-nums; }
+
+/* Page footer with automatic page numbering using CSS counters.
+   counter-reset is on the print body; counter-increment per .a4-sheet. */
+.a4-footer {
+  position: absolute;
+  inset-inline: 14mm;
+  bottom: 8mm;
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #64748b;
+  border-top: 1px dashed #cbd5e1;
+  padding-top: 4px;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+  body {
+    background: #fff !important;
+    counter-reset: page;
+  }
+  .disclosure-shell { background: #fff; padding: 0; }
+  .disclosure-toolbar, .print-hide { display: none !important; }
+  .a4-sheet {
+    box-shadow: none;
+    border: none;
+    margin: 0 auto;
+    counter-increment: page;
+  }
+  /* Automatic page number in the footer (rendered only on print). */
+  .a4-footer .page-num::after {
+    content: "صفحة " counter(page);
+  }
+}
+
+/* Screen-only fallback: show the page index so the operator can
+   review the same numbering when previewing. */
+@media screen {
+  .a4-footer .page-num::after { content: attr(data-page); }
+}
