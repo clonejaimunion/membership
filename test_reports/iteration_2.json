@@ -1,0 +1,23 @@
+{
+  "summary": "Verified the 'شهور التأخر' months+days fix in the overdue disclosure reports. Backend: 8/8 pytest pass. owed_months is rounded to 4 decimals and equals owed/(members*3) for committee rows, governorate subtotals and grand total. Values match across all-govs, gov and committee endpoints. Missing params return 400. A request without auth returns 401/403. Frontend: on the all-govs-overdue print page (2026-01-01 to 2026-06-30) all 95 rows (committees, 19 governorate subtotals, grand total) match the API exactly, checked cell by cell for حجم العضوية, المحصل, المتأخر and شهور التأخر (0 mismatches). Sample values: '٥ شهر و ٢٤ يوم' (5.7967), '٦ شهر' (6.0) and grand total '٥ شهر و ٢٠ يوم'. No decimal months remain. The gov-overdue and committee-overdue pages (أسيوط / الشركة المصرية للري ولصرف) also match.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "DisclosurePrintPage overdue reports", "issues": ["The شهور التأخر column is narrow (10-12% width), so text like '٥ شهر و ٢٤ يوم' wraps onto two lines. Consider widening the column or adding white-space: nowrap."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_overdue_months_days.py", "/app/test_reports/pytest/pytest_overdue.xml"],
+  "action_items": ["Optional: widen the شهور التأخر column or set it to nowrap so 'X شهر و Y يوم' stays on one line."],
+  "critical_code_review_comments": [
+    "fmtMonthsDays logic is correct: round(v*30), then months = floor(total/30) and days = total%30, with '—' when both are zero. Values like 5.99998 correctly become '٦ شهر'.",
+    "The '—' zero case was confirmed by code review only. With only_overdue=true there were no zero-owed rows in the test data."
+  ],
+  "updated_files": ["/app/backend/tests/test_overdue_months_days.py"],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "seed_data_creation": "None; existing data in department cf96258b-... was enough",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "The print page route is /project/{dept}/financial/disclosure/{kind}. Changing the date inputs does not reload the report; click report-load-btn. Login testids: username-input, password-input, login-submit-button."
+}
