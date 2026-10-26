@@ -865,9 +865,8 @@ async def root():
 @api_router.post("/auth/login", response_model=LoginResponse)
 async def login(input: LoginRequest, request: Request):
     username = input.username.strip()
-    forwarded = request.headers.get("x-forwarded-for", "").split(",")[0].strip()
-    client_ip = forwarded or (request.client.host if request.client else "unknown")
-    identifier = f"{client_ip}:{username.lower()}"
+    # Lock per username (client IP headers can be spoofed behind proxies).
+    identifier = username.lower()
     attempt = await db.login_attempts.find_one({"identifier": identifier}, {"_id": 0})
     now = datetime.now(timezone.utc)
     if attempt and attempt.get("locked_until"):

@@ -230,7 +230,7 @@ export default function UsersAdminPage() {
               <Switch checked={!!form.active} onCheckedChange={(v) => setForm({ ...form, active: v })} data-testid="users-input-active" />
             </div>
 
-            {form.role !== "super_admin" && (
+            {!["super_admin", "admin"].includes(form.role) && (
               <div className="grid gap-2 rounded-lg border border-slate-200 p-3" data-testid="users-portals-block">
                 <div className="flex items-center justify-between">
                   <Label className="text-xs font-bold text-slate-600">صلاحيات الوصول للبوابات</Label>

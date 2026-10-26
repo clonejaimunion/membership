@@ -30,7 +30,7 @@ export default function LoginPage() {
       if (status === 404) {
         setError("⚠️ تعذّر الوصول للخادم (404). تأكد من تشغيل الخادم المحلي على المنفذ 5599 ثم حدّث الصفحة.");
       } else if (status === 401) {
-        setError("بيانات الدخول غير صحيحة. يرجى التحقق من اسم المستخدم وكلمة المرور.");
+        setError(err?.response?.data?.detail || "بيانات الدخول غير صحيحة. يرجى التحقق من اسم المستخدم وكلمة المرور.");
       } else if (status === 403) {
         setError("هذا الحساب موقوف. تواصل مع مدير النظام.");
       } else if (!err?.response) {

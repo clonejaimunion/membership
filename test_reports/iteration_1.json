@@ -1,0 +1,41 @@
+{
+  "summary": "First test run of the imported Arabic union archive. Backend: 11/11 pytest tests passed. Covered admin login, bcrypt $2b$ storage, the legacy salted-SHA256 hash being accepted and auto-upgraded to bcrypt (later logins work, wrong password rejected), 5 wrong attempts giving 429 with an Arabic message (correct password also blocked until the lock is cleared), validation 422 returning an Arabic string, CORS (preview origin allowed, evil origin rejected), user portal_permissions create/update/persist (unknown keys filtered out), inheritance radd for wife + daughter (1/8 + 1/2 + radd 3/8 = 7/8, 'فرض + رد', amounts add up to the total), save-beneficiaries then a case-form view table with 10 columns, departments CRUD, members list. Frontend: login, users dialog with 13 portal buttons in a scrollable block, toggle + save + edit shows the saved ones checked and persists, calculator dialog columns and values, save from the UI, case form opened from the view button, and smoke checks of the gateway pages (no page errors). One security weakness: the lockout can be bypassed by spoofing X-Forwarded-For. Two minor UI bugs.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/auth/login", "issue": "SECURITY: the lockout key is f'{x-forwarded-for first entry}:{username}', and that first entry is controlled by the client. Reproduced: after the real IP was locked (429), sending requests with a different X-Forwarded-For value each time (10.0.0.0..5) returned 401 instead of 429, so password guessing can go on without limit. Fix: use the last/right-most proxy-appended IP (or request.client.host behind a trusted proxy), and/or add a per-username lock counter that ignores IP."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "InheritanceCalculatorDialog loadSavedData", "issue": "When the dialog is reopened after saving, the saved beneficiaries and results load, but 'أصل المبلغ' shows 0. It uses aid.amount (0 for pending aids) and ignores data.total_amount from GET /aids/{id}/beneficiaries. Add setTotalAmount(data.total_amount) inside the data.found branch.", "selector": "#total-amount", "priority": "MEDIUM"},
+      {"component": "UsersAdminPage portal block", "issue": "The block is shown for role 'admin' (condition is role !== 'super_admin'), but the backend gives admins all portals and the helper text says the block is hidden for admins. Hide it for admin as well (role not in [super_admin, admin]).", "selector": "[data-testid=users-portals-block]", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "InheritanceCalculatorDialog summary explanation", "issues": ["Raw markdown asterisks ('**الفروض:**') are rendered as plain text"]},
+      {"screen": "InheritanceCalculatorDialog inputs", "issues": ["Name input, relation select, add/remove/calculate/save buttons have no data-testid (only the result cells do)"]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_union_security_inheritance.py", "/app/backend/tests/cleanup_test_data.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "Fix the lockout bypass: don't trust the client-supplied first X-Forwarded-For entry; consider a per-username lock as well",
+    "InheritanceCalculatorDialog: restore saved total_amount when reopening",
+    "UsersAdminPage: hide the portal block for the admin role too (matches the backend and the helper text)",
+    "Optional: on 401, the login page shows a generic message and hides the backend's 'remaining attempts' text; consider showing the backend detail"
+  ],
+  "critical_code_review_comments": [
+    "server.py is 5700+ lines; split it into routers",
+    "Login lockout identifier is spoofable through X-Forwarded-For (see backend minor)",
+    "seed_defaults does not reset or update the admin password if it changes (it only upgrades the role). Fine for keeping user-changed passwords, but it differs from the playbook's seed_admin expectation",
+    "Auth uses a Bearer token in localStorage, not httpOnly cookies (playbook cookie check not applicable; carries XSS token-theft risk)",
+    "calculate-beneficiaries takes a raw Dict body with no Pydantic validation; a non-numeric total_amount would raise TypeError, which the generic handler turns into a 500 instead of a 400"
+  ],
+  "updated_files": ["/app/backend/tests/test_union_security_inheritance.py", "/app/backend/tests/cleanup_test_data.py"],
+  "success_rate": {"backend": "100% (11/11) - 1 security weakness found by manual test", "frontend": "~90% - all requested flows work; 2 minor bugs"},
+  "test_credentials": "admin/admin123 from /app/memory/test_credentials.md - worked",
+  "seed_data_creation": "Temporary TEST_ departments/members/aids/users created and removed with cleanup_test_data.py; login_attempts cleared. Admin was never locked out.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Run: export REACT_APP_BACKEND_URL and MONGO_URL, then pytest /app/backend/tests/test_union_security_inheritance.py. The aid flow is: POST /departments, then POST /members, then PATCH /members/{id}/status {status:'متوفي'}, which auto-creates a pending aid (GET /aids?department_id=). Aid pending page: /project/{dep}/financial/aid/pending with testids aid-calc-btn-{aid} and aid-view-btn-{aid} (the view button opens the case form in a new tab). The UI renders Arabic-Indic digits, so text locators with ASCII digits fail; use testids or ids. Run cleanup_test_data.py afterwards."
+}

@@ -54,6 +54,7 @@ export default function InheritanceCalculatorDialog({ open, onOpenChange, aid })
         // توجد بيانات محفوظة مسبقاً
         setBeneficiaries(data.beneficiaries.map(b => ({ name: b.name, relation: b.relation })));
         setResults(data.beneficiaries);
+        if (data.total_amount) setTotalAmount(data.total_amount);
         setSummaryExplanation(data.summary_explanation || "");
         setValidation({
           is_valid: true,
