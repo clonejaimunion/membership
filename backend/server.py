@@ -4794,6 +4794,8 @@ async def list_subscriptions(
     status: Optional[str] = None,
     search: Optional[str] = None,
     is_dues_settlement: Optional[bool] = None,
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
     page: int = 1,
     page_size: int = 20,
     user: Dict[str, Any] = Depends(require_user),
@@ -4845,11 +4847,20 @@ async def list_subscriptions(
             ])
     
     # Get total count
-    total = await db.subscriptions.count_documents(query)
-    
-    # Fetch items sorted by creation date (newest first) with pagination
-    skip = (page - 1) * page_size
-    items = await db.subscriptions.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(page_size).to_list(page_size)
+    if date_from or date_to:
+        rows = await db.subscriptions.find(query, {"_id": 0, "id": 1, "issued_at": 1}).sort("created_at", -1).to_list(100000)
+        ids = [r["id"] for r in rows if _in_date_range(r.get("issued_at", ""), date_from, date_to)]
+        total = len(ids)
+        skip = (page - 1) * page_size
+        page_ids = ids[skip:skip + page_size]
+        docs = await db.subscriptions.find({"id": {"$in": page_ids}}, {"_id": 0}).to_list(page_size)
+        order = {i: n for n, i in enumerate(page_ids)}
+        items = sorted(docs, key=lambda d: order.get(d["id"], 0))
+    else:
+        total = await db.subscriptions.count_documents(query)
+        # Fetch items sorted by creation date (newest first) with pagination
+        skip = (page - 1) * page_size
+        items = await db.subscriptions.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(page_size).to_list(page_size)
     
     return {
         "data": items,
@@ -5153,17 +5164,48 @@ async def delete_subscription(subscription_id: str, user: Dict[str, Any] = Depen
     return {"deleted": True}
 
 
+def _in_date_range(value: str, date_from: Optional[str], date_to: Optional[str]) -> bool:
+    """Check an issued_at date (any supported format) against an inclusive YYYY-MM-DD range."""
+    parsed = parse_date_value(str(value or "")[:10])
+    if not parsed:
+        return False
+    day = parsed.strftime("%Y-%m-%d")
+    return (not date_from or day >= date_from) and (not date_to or day <= date_to)
+
+
 @api_router.get("/subscriptions/summary")
-async def subscriptions_summary(department_id: str, user: Dict[str, Any] = Depends(require_user)):
+async def subscriptions_summary(
+    department_id: str,
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
+    user: Dict[str, Any] = Depends(require_user),
+):
+    if date_from and date_to and date_from > date_to:
+        raise HTTPException(status_code=400, detail="تاريخ البداية يجب أن يكون قبل تاريخ النهاية")
     counts = {}
     totals = {}
+    collected = 0.0
+    collected_count = 0
     for status in SUBSCRIPTION_STATUSES:
-        items = await db.subscriptions.find({"department_id": department_id, "status": status}, {"_id": 0, "amount": 1}).to_list(5000)
+        items = await db.subscriptions.find(
+            {"department_id": department_id, "status": status},
+            {"_id": 0, "amount": 1, "issued_at": 1, "is_dues_settlement": 1},
+        ).to_list(100000)
+        if date_from or date_to:
+            items = [i for i in items if _in_date_range(i.get("issued_at", ""), date_from, date_to)]
         counts[status] = len(items)
         totals[status] = sum(float(item.get("amount") or 0) for item in items)
+        if status == "تم التحصيل":
+            subs_only = [i for i in items if not i.get("is_dues_settlement")]
+            collected = sum(float(i.get("amount") or 0) for i in subs_only)
+            collected_count = len(subs_only)
     counts["total"] = sum(counts.values())
     totals["total"] = sum(totals.values())
-    return {"counts": counts, "totals": totals}
+    return {
+        "counts": counts,
+        "totals": totals,
+        "collected": {"amount": collected, "count": collected_count, "date_from": date_from or "", "date_to": date_to or ""},
+    }
 
 
 def _ym_to_index(ym: str) -> Optional[int]:

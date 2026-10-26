@@ -16,6 +16,8 @@ FastAPI (backend/server.py + services/) + MongoDB + React (CRA/craco, Arabic RTL
 ## Backlog
 - P1 (Phase 2): recycle bin instead of hard delete; audit log of sensitive actions; mobile layout.
 - One-line updater: release/update.ps1 (iex/irm) + prebuilt package release/member_union_update.zip (backend + deploy + frontend/build, no Node needed). Rebuild zip after code changes: `REACT_APP_BACKEND_URL= yarn build` then zip backend/server.py, services, requirements-local.txt, deploy/, frontend/build.
+- Subscriptions page: date range filter (من/إلى on issued_at «تحريراً في») for list + summary; shows actual collected amount (status تم التحصيل, excluding dues settlements) for the period; hero amount switches to "المحصَّل خلال الفترة". Rebuild release zip with `bash /app/deploy/rebuild_release.sh`.
+
 
 - P2 (Phase 3): scheduled automatic backup; reports dashboard/charts; bulk edit/delete.
 - Tech: restore tool for backup_data.py JSON dumps; split server.py.

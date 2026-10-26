@@ -55,6 +55,8 @@ export default function SubscriptionsPage({ settlementMode = false } = {}) {
   const [form, setForm] = useState(() => settlementMode ? { ...emptyForm, status: "تم التحصيل" } : emptyForm);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);  // null = create mode, else update mode
   const [viewOpen, setViewOpen] = useState(false);
@@ -83,13 +85,18 @@ export default function SubscriptionsPage({ settlementMode = false } = {}) {
     });
     if (statusFilter) params.set("status", statusFilter);
     if (search.trim()) params.set("search", search.trim());
+    if (dateFrom) params.set("date_from", dateFrom);
+    if (dateTo) params.set("date_to", dateTo);
     const { data } = await api.get(`/subscriptions?${params.toString()}`);
     setItems(data.data || []);
     setTotal(data.total || 0);
     setTotalPages(data.total_pages || 1);
   };
   const loadSummary = async () => {
-    const { data } = await api.get(`/subscriptions/summary?department_id=${id}`);
+    const params = new URLSearchParams({ department_id: id });
+    if (dateFrom) params.set("date_from", dateFrom);
+    if (dateTo) params.set("date_to", dateTo);
+    const { data } = await api.get(`/subscriptions/summary?${params.toString()}`);
     setSummary(data);
   };
 
@@ -117,7 +124,17 @@ export default function SubscriptionsPage({ settlementMode = false } = {}) {
     }, 250);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, statusFilter]);
+  }, [search, statusFilter, dateFrom, dateTo]);
+
+  useEffect(() => {
+    if (dateFrom && dateTo && dateFrom > dateTo) {
+      setError("تاريخ البداية يجب أن يكون قبل تاريخ النهاية");
+      return;
+    }
+    setError("");
+    loadSummary().catch((err) => setError(getErrorMessage(err)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dateFrom, dateTo]);
 
   useEffect(() => {
     loadList().catch((err) => setError(getErrorMessage(err)));
@@ -321,8 +338,8 @@ export default function SubscriptionsPage({ settlementMode = false } = {}) {
             { label: pageTitle },
           ]}
           stats={[
-            { key: "count", label: settlementMode ? "عدد التسويات" : "إجمالي السجلات", value: items.length },
-            { key: "amount", label: settlementMode ? "إجمالي المخصوم (ج.م)" : "إجمالي المبالغ (ج.م)", value: (settlementMode ? items.reduce((s, i) => s + (Number(i.amount) || 0), 0) : totalAmount).toLocaleString("ar-EG") },
+            { key: "count", label: settlementMode ? "عدد التسويات" : "إجمالي السجلات", value: settlementMode ? items.length : total },
+            { key: "amount", label: settlementMode ? "إجمالي المخصوم (ج.م)" : (dateFrom || dateTo ? "المحصَّل خلال الفترة (ج.م)" : "إجمالي المبالغ (ج.م)"), value: (settlementMode ? items.reduce((s, i) => s + (Number(i.amount) || 0), 0) : (dateFrom || dateTo ? (summary.collected?.amount || 0) : totalAmount)).toLocaleString("ar-EG") },
           ]}
         />
 
@@ -346,7 +363,7 @@ export default function SubscriptionsPage({ settlementMode = false } = {}) {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => { setStatusFilter(""); setSearch(""); }}
+                onClick={() => { setStatusFilter(""); setSearch(""); setDateFrom(""); setDateTo(""); }}
                 className="border-slate-300 text-slate-700 hover:bg-slate-50"
                 data-testid="subscription-clear-filters"
                 title="عرض كافة البيانات بدون تصفية"
@@ -354,6 +371,27 @@ export default function SubscriptionsPage({ settlementMode = false } = {}) {
                 إلغاء التصفية
               </Button>
             </div>
+          </div>
+          <div className="mt-4 flex flex-wrap items-end gap-3 border-t border-slate-100 pt-4" data-testid="subscription-date-filter">
+            <div className="grid gap-1">
+              <Label htmlFor="sub-date-from" className="text-xs font-bold text-slate-600">من تاريخ (تحريراً في)</Label>
+              <Input id="sub-date-from" type="date" value={dateFrom} max={dateTo || undefined} onChange={(e) => setDateFrom(e.target.value)} className="h-9 w-44" data-testid="subscription-date-from" />
+            </div>
+            <div className="grid gap-1">
+              <Label htmlFor="sub-date-to" className="text-xs font-bold text-slate-600">إلى تاريخ</Label>
+              <Input id="sub-date-to" type="date" value={dateTo} min={dateFrom || undefined} onChange={(e) => setDateTo(e.target.value)} className="h-9 w-44" data-testid="subscription-date-to" />
+            </div>
+            {!settlementMode && (
+              <div className="ms-auto rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-emerald-800" data-testid="subscription-collected-period">
+                <p className="text-xs font-bold">
+                  المبلغ المحصَّل فعليًا {dateFrom || dateTo ? `من ${dateFrom ? dateFrom.split("-").reverse().join("/") : "البداية"} إلى ${dateTo ? dateTo.split("-").reverse().join("/") : "اليوم"}` : "(كل الفترات)"}
+                </p>
+                <p className="text-xl font-extrabold tabular-nums" data-testid="subscription-collected-amount">
+                  {(summary.collected?.amount || 0).toLocaleString("ar-EG")} ج.م
+                  <span className="ms-2 text-xs font-bold opacity-70">({(summary.collected?.count || 0).toLocaleString("ar-EG")} سجل)</span>
+                </p>
+              </div>
+            )}
           </div>
         </section>
 
